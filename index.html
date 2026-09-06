@@ -1,0 +1,530 @@
+<title>The Hong Kong School Register</title>
+<style>
+  :root{
+    --bg:#EDF1EC;
+    --surface:#F7F9F5;
+    --surface-2:#E3EAE3;
+    --ink:#0B1F1B;
+    --text:#1A2722;
+    --muted:#5C6B63;
+    --jade:#0F5A4B;
+    --jade-deep:#0A3F36;
+    --jade-soft:#D7E5DC;
+    --brass:#B98A2F;
+    --brass-soft:#EFE3C3;
+    --line:#D5DDD5;
+    --line-strong:#B7C3B9;
+    --shadow:0 1px 2px rgba(11,31,27,.06),0 8px 24px rgba(11,31,27,.05);
+    --shadow-lift:0 2px 6px rgba(11,31,27,.08),0 18px 44px rgba(11,31,27,.10);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0A1411;
+      --surface:#0F1D18;
+      --surface-2:#15251F;
+      --ink:#EAF0EC;
+      --text:#DCE6DF;
+      --muted:#92A49A;
+      --jade:#3FA98A;
+      --jade-deep:#7FC9B0;
+      --jade-soft:#17332A;
+      --brass:#D4A94E;
+      --brass-soft:#2C2412;
+      --line:#22332B;
+      --line-strong:#33473E;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+      --shadow-lift:0 2px 8px rgba(0,0,0,.4),0 18px 44px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0A1411;
+    --surface:#0F1D18;
+    --surface-2:#15251F;
+    --ink:#EAF0EC;
+    --text:#DCE6DF;
+    --muted:#92A49A;
+    --jade:#3FA98A;
+    --jade-deep:#7FC9B0;
+    --jade-soft:#17332A;
+    --brass:#D4A94E;
+    --brass-soft:#2C2412;
+    --line:#22332B;
+    --line-strong:#33473E;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+    --shadow-lift:0 2px 8px rgba(0,0,0,.4),0 18px 44px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--jade);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+  /* ---------- header ---------- */
+  header{position:relative;padding:56px 0 32px;border-bottom:1px solid var(--line)}
+  .eyebrow{
+    font-family:"IBM Plex Mono",Menlo,monospace;
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--jade);margin:0 0 18px;display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:"";width:26px;height:2px;background:var(--brass);display:inline-block}
+  h1{
+    font-family:"Fraunces",Georgia,serif;
+    font-weight:600;font-size:clamp(2rem,5vw,3.4rem);
+    line-height:1.08;letter-spacing:-.01em;color:var(--ink);
+    margin:0 0 16px;max-width:20ch;text-wrap:balance;
+  }
+  .lede{max-width:60ch;margin:0 0 30px;color:var(--muted);font-size:1.06rem;text-wrap:pretty}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .stat{background:var(--surface);padding:20px 18px}
+  .stat b{
+    display:block;font-family:"Fraunces",Georgia,serif;font-weight:600;
+    font-size:1.9rem;line-height:1.05;color:var(--ink);font-variant-numeric:tabular-nums;
+  }
+  .stat span{display:block;font-size:.78rem;color:var(--muted);margin-top:6px;letter-spacing:.01em}
+  @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  /* ---------- toolbar ---------- */
+  .toolbar{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
+  .toolbar-inner{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .search{flex:1 1 220px;min-width:200px;position:relative}
+  .search input{
+    width:100%;padding:10px 12px 10px 34px;border:1px solid var(--line-strong);border-radius:9px;
+    background:var(--surface);color:var(--text);font-family:inherit;font-size:.92rem;
+  }
+  .search input:focus{outline:2px solid var(--jade);outline-offset:1px}
+  .search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
+  .groups{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .glabel{font-family:"IBM Plex Mono",Menlo,monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .chip{
+    border:1px solid var(--line-strong);background:var(--surface);color:var(--text);
+    padding:7px 13px;border-radius:999px;font-size:.82rem;cursor:pointer;font-family:inherit;
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  .chip:hover{border-color:var(--jade)}
+  .chip[aria-pressed="true"]{background:var(--jade);border-color:var(--jade);color:#fff}
+  .sort{padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);color:var(--text);font-family:inherit;font-size:.85rem}
+  .count{margin:14px 0 0;font-family:"IBM Plex Mono",Menlo,monospace;font-size:.78rem;color:var(--muted);letter-spacing:.02em}
+
+  /* ---------- cards ---------- */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:28px 0}
+  @media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:22px;display:flex;flex-direction:column;gap:16px;
+    transition:box-shadow .2s,transform .2s;
+  }
+  .card:hover{box-shadow:var(--shadow-lift);transform:translateY(-2px)}
+  .card-head{display:flex;gap:14px;align-items:flex-start}
+  .mono{
+    flex:0 0 auto;width:52px;height:52px;border-radius:50%;
+    border:1.5px solid var(--jade);color:var(--jade);
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:.82rem;letter-spacing:.01em;
+  }
+  .card-head h2{margin:0;font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:1.28rem;line-height:1.18;color:var(--ink)}
+  .card-head h2 a{color:inherit;text-decoration:none}
+  .loc{font-size:.8rem;color:var(--muted);margin-top:4px}
+  .loc b{color:var(--text);font-weight:600}
+  .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .badge{
+    font-family:"IBM Plex Mono",Menlo,monospace;font-size:.68rem;letter-spacing:.04em;
+    padding:3px 8px;border-radius:5px;background:var(--jade-soft);color:var(--jade-deep);
+  }
+  .badge.brass{background:var(--brass-soft);color:#7a5a17}
+  :root[data-theme="dark"] .badge.brass{color:var(--brass)}
+  .tagline{font-size:.88rem;color:var(--muted);font-style:italic}
+  .statstrip{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .cell{background:var(--bg);padding:11px 12px}
+  .cell .k{display:block;font-family:"IBM Plex Mono",Menlo,monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .cell .v{display:block;font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:1.12rem;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:2px}
+  .cell .v small{font-family:"Archivo",sans-serif;font-weight:400;font-size:.72rem;color:var(--muted)}
+  .fee-bar{display:flex;gap:2px;margin-top:6px}
+  .fee-bar i{height:5px;flex:1;border-radius:2px;background:var(--surface-2)}
+  .fee-bar i.on{background:var(--brass)}
+  details{border-top:1px solid var(--line);padding-top:14px}
+  summary{
+    cursor:pointer;list-style:none;font-family:"IBM Plex Mono",Menlo,monospace;font-size:.72rem;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--jade);display:flex;align-items:center;gap:6px;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"+";font-size:1rem;line-height:1;transition:transform .15s}
+  details[open] summary::before{transform:rotate(45deg)}
+  .detail{padding-top:12px;font-size:.86rem}
+  .detail h4{margin:14px 0 4px;font-size:.72rem;font-family:"IBM Plex Mono",Menlo,monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .detail h4:first-child{margin-top:0}
+  .detail p{margin:0;color:var(--text)}
+  .detail ul{margin:6px 0 0;padding-left:18px}
+  .detail li{margin:3px 0;color:var(--text)}
+  .site{display:inline-flex;align-items:center;gap:5px;margin-top:12px;font-size:.85rem;font-weight:600}
+
+  /* ---------- table ---------- */
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+  table{width:100%;border-collapse:collapse;min-width:720px;font-size:.88rem}
+  thead th{
+    text-align:left;padding:12px 16px;font-family:"IBM Plex Mono",Menlo,monospace;font-size:.66rem;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);
+    background:var(--surface-2);position:sticky;top:0;
+  }
+  tbody td{padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover td{background:var(--surface-2)}
+  td .nm{font-weight:600;color:var(--ink)}
+  td .nm small{display:block;font-weight:400;color:var(--muted);font-size:.72rem}
+  .num{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink);white-space:nowrap}
+
+  /* ---------- guide ---------- */
+  section.guide{padding:40px 0 8px}
+  .guide h2{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:1.7rem;color:var(--ink);margin:0 0 6px}
+  .guide .sub{color:var(--muted);max-width:60ch;margin:0 0 26px}
+  .guide-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+  @media(max-width:720px){.guide-grid{grid-template-columns:1fr}}
+  .guide-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .guide-card h3{margin:0 0 10px;font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:1.15rem;color:var(--ink)}
+  .guide-card p{margin:0 0 10px;font-size:.9rem;color:var(--text)}
+  .guide-card p:last-child{margin:0}
+  .guide-card ul{margin:0;padding-left:18px;font-size:.9rem}
+  .guide-card li{margin:4px 0}
+
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:30px 0 60px;color:var(--muted);font-size:.82rem}
+  footer h3{font-family:"Fraunces",Georgia,serif;font-weight:600;color:var(--ink);font-size:1rem;margin:0 0 8px}
+  footer p{margin:0 0 14px;max-width:70ch}
+  footer .srcs{font-size:.8rem;line-height:1.9}
+  footer .srcs a{color:var(--jade)}
+
+  .empty{padding:48px 0;text-align:left;color:var(--muted)}
+  :focus-visible{outline:2px solid var(--jade);outline-offset:2px;border-radius:4px}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Hong Kong · International Schools · 2025/26</p>
+    <h1>Hong Kong's leading international secondary schools</h1>
+    <p class="lede">A working register for parents: location, history, admissions, and what each school is known for — with the numbers that matter (IB averages, AP scores, tuition) set side by side. Every figure is indicative; follow the link to each school's official site before you decide.</p>
+    <div class="stats">
+      <div class="stat"><b>21</b><span>schools profiled</span></div>
+      <div class="stat"><b>36.86</b><span>HK IB average 2025 (global 30.58)</span></div>
+      <div class="stat"><b>HK$123k–343k</b><span>indicative annual tuition</span></div>
+      <div class="stat"><b>41.2</b><span>highest IB average — GSIS</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="wrap toolbar-inner">
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="q" type="search" placeholder="Search a school…" aria-label="Search schools">
+    </div>
+    <div class="groups">
+      <span class="glabel">Curriculum</span>
+      <button class="chip" data-cur="IB" aria-pressed="false">IB</button>
+      <button class="chip" data-cur="A-Level" aria-pressed="false">A-Level</button>
+      <button class="chip" data-cur="AP" aria-pressed="false">AP</button>
+      <button class="chip" data-cur="HSC" aria-pressed="false">HSC</button>
+      <button class="chip" data-cur="Abitur" aria-pressed="false">Abitur</button>
+    </div>
+    <div class="groups">
+      <span class="glabel">Region</span>
+      <button class="chip" data-reg="all" aria-pressed="true">All</button>
+      <button class="chip" data-reg="Hong Kong Island" aria-pressed="false">HK Island</button>
+      <button class="chip" data-reg="Kowloon" aria-pressed="false">Kowloon</button>
+      <button class="chip" data-reg="New Territories" aria-pressed="false">New Territories</button>
+      <button class="chip" data-reg="Lantau" aria-pressed="false">Lantau</button>
+    </div>
+    <div class="groups">
+      <span class="glabel">Language</span>
+      <button class="chip" data-lang="all" aria-pressed="true">All</button>
+      <button class="chip" data-lang="bilingual" aria-pressed="false">Bilingual EN·中文</button>
+      <button class="chip" data-lang="english" aria-pressed="false">English</button>
+    </div>
+    <select class="sort" id="sort" aria-label="Sort schools">
+      <option value="name">Sort: A–Z</option>
+      <option value="ib">Sort: IB average (high→low)</option>
+      <option value="fee">Sort: tuition (low→high)</option>
+      <option value="founded">Sort: founded (oldest first)</option>
+    </select>
+  </div>
+</div>
+
+<main class="wrap">
+  <p class="count" id="count">Showing 21 of 21 schools</p>
+  <div class="grid" id="grid"></div>
+
+  <section style="padding:8px 0 0">
+    <h2 style="font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:1.7rem;color:var(--ink);margin:0 0 6px">Compare at a glance</h2>
+    <p style="color:var(--muted);max-width:60ch;margin:0 0 18px">The same filtered list, in ledger form. Sort with the controls above.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>School</th><th>Region</th><th>Curriculum</th><th>Exam result</th><th>Annual tuition (indicative)</th><th>Founded</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="guide">
+    <h2>How to choose</h2>
+    <p class="sub">Four things worth understanding before you shortlist — the pieces parents most often wish they'd known earlier.</p>
+    <div class="guide-grid">
+      <div class="guide-card">
+        <h3>The curriculum decides the destination</h3>
+        <ul>
+          <li><b>IB Diploma</b> — broad, six-subject programme; the default in Hong Kong, and best if university destination is undecided. Scored /45.</li>
+          <li><b>A-Level</b> — early specialisation in 3–4 subjects; a strong fit for UK (and increasingly global) universities.</li>
+          <li><b>AP</b> — US-style transcript of 20+ advanced courses; the natural route to American universities.</li>
+          <li><b>HSC / Abitur</b> — national pathways to Australia and Germany/Switzerland respectively.</li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <h3>Tuition is only the first number</h3>
+        <p>Add a one-off <b>debenture, capital levy, or nomination-rights fee</b> (HK$250k–1.5m+ at private flagships; ESF asks ~HK$38k once per family), plus application fees, board-exam fees, and any EAL/learning support. Ask for a full schedule and total it across the whole school career, not one year.</p>
+      </div>
+      <div class="guide-card">
+        <h3>Admissions run on a rolling clock</h3>
+        <p>Applications usually open the autumn <i>before</i> the year of entry, and popular schools hold waitlists. Priority typically goes to siblings, staff children, debenture holders, and certain nationalities. Most include an assessment (written + interview, often in English and — for bilingual schools — Mandarin).</p>
+      </div>
+      <div class="guide-card">
+        <h3>Read the numbers carefully</h3>
+        <p>An IB average of 39 in a 30-student cohort is not the same as 37 in a 130-student cohort. Small, selective schools concentrate high averages; large ESF schools include a wider ability range. Weigh <b>cohort size, selectivity, and fit</b> alongside raw scores — and check what a school publishes about <i>value-added</i>, not just peaks.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <h3>About this register</h3>
+    <p>Compiled from public 2024/25 and 2025/26 sources. Tuition, curricula, admission details and exam results change annually and vary by year level — treat everything here as indicative, and always confirm on the school's official website. This is an independent reference and is not affiliated with, or endorsed by, any school.</p>
+    <div class="srcs"><b>Sources &amp; further reading:</b><br>
+      <a href="https://www.international-schools-guide.com/insights/ib-results-hong-kong/">International Schools Guide — IB results</a> ·
+      <a href="https://www.international-schools-guide.com/insights/best-schools-university-placement-hong-kong/">ISG — university placement</a> ·
+      <a href="https://www.hk-schools.com/post/2025-hong-kong-ib-results">HK-Schools — 2025 IB results</a> ·
+      <a href="https://www.tutopiya.com/blog/international-school-fees/international-school-fees-hong-kong-guide/">Tutopiya — fees guide 2025/26</a> ·
+      <a href="https://www.hk-schools.com/post/hktuitionfees-2025">HK-Schools — tuition 2025/26</a> ·
+      <a href="https://www.stheadline.com/local-school/3497467/">ST Headline — IB school admission info</a> ·
+      <a href="https://www.esf.edu.hk">English Schools Foundation</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const SCHOOLS = [
+  {id:"cis",name:"Chinese International School",short:"CIS",mono:"CIS",curriculum:["IB"],bilingual:true,region:"Hong Kong Island",district:"Braemar Hill, North Point",address:"1 Hau Yuen Path, Braemar Hill",founded:1983,feeLow:216100,feeHigh:342800,ibAvg:38.95,result:"38.95",resultLabel:"IB average (2025)",cohort:"~1,600 students",grades:"Reception–Year 13",tagline:"Hong Kong's first IB school — full East–West bilingualism",website:"https://www.cis.edu.hk",
+    history:"Founded 1983 on Braemar Hill, CIS was Hong Kong's first IB World School and runs the full IB continuum (PYP–DP plus CP) with genuinely equal-weight English and Putonghua instruction.",
+    admissions:"Highly competitive rolling admissions with written and interview assessment, often in both languages. A refundable capital note/debenture is required; Year 10 includes a residential year in Hangzhou.",
+    highlights:["49% of the 2025 cohort scored 40+ points","28% earned the Bilingual Diploma","Year 10 residential year in Hangzhou","Strong Tsinghua / Peking placement via Chinese-language entry"]},
+  {id:"gsis",name:"German Swiss International School",short:"GSIS",mono:"GSIS",curriculum:["IB","A-Level","Abitur"],bilingual:false,region:"Hong Kong Island",district:"The Peak",address:"11 Guildford Road, The Peak",founded:1969,feeLow:197000,feeHigh:256700,ibAvg:41.2,result:"41.2",resultLabel:"IB average (2025)",cohort:"~1,300 students",grades:"K–Year 13",tagline:"The city's academic powerhouse — IB, A-Level & Abitur",website:"https://www.gsis.edu.hk",
+    history:"Founded 1969, GSIS runs two parallel streams — an English stream (IGCSE then A-Level alongside a smaller IB cohort) and a German stream to the Abitur — and is widely regarded as Hong Kong's most academically intense international school.",
+    admissions:"Very competitive. The German stream prioritises German/Swiss nationals; the English stream assesses English and mathematics. Non-German-speaking families sometimes note the school's strong German cultural orientation.",
+    highlights:["Highest IB average of HK international schools (41.2, 2025)","52% of A-Level grades at A*/A (2024)","7 perfect 45-point IB scores in 2025","Rare direct route to German & Swiss universities via Abitur"]},
+  {id:"hkis",name:"Hong Kong International School",short:"HKIS",mono:"HKIS",curriculum:["AP"],bilingual:false,region:"Hong Kong Island",district:"Tai Tam (secondary) · Repulse Bay (primary)",address:"1 Red Hill Road, Tai Tam",founded:1966,feeLow:224800,feeHigh:272600,ibAvg:null,result:"79% at 4–5",resultLabel:"AP scores (2025)",cohort:"~3,000 students",grades:"Reception 1–Grade 12",tagline:"Hong Kong's flagship American school — 25 AP courses",website:"https://www.hkis.edu.hk",
+    history:"Founded 1966 with Lutheran heritage, HKIS is the city's largest American-style school, running 25 Advanced Placement courses and a US transcript rather than IB.",
+    admissions:"Debentures (up to ~HK$3m) confer admission priority. Deep US college-counselling resources; Christian (Lutheran) background is present but not compulsory.",
+    highlights:["Deepest US college-counselling bench in Hong Kong","95% AP pass rate at score 3+ (2025)","Nearly 100% of graduates continue to tertiary study","Dual campuses at Repulse Bay and Tai Tam"]},
+  {id:"isf",name:"The ISF Academy",short:"ISF",mono:"ISF",curriculum:["IB"],bilingual:true,region:"Hong Kong Island",district:"Pok Fu Lam",address:"1 Kong Sin Wan Road, Pok Fu Lam",founded:2003,feeLow:240320,feeHigh:303530,ibAvg:38.9,result:"38.9",resultLabel:"IB average (2025)",cohort:"~2,000 students",grades:"Pre-K–Grade 12",tagline:"Private independent bilingual IB with deep Mandarin immersion",website:"https://academy.isf.edu.hk",
+    history:"Founded 2003 as a private independent school, ISF delivers the full IB continuum inside a Chinese–English immersion model that includes a classical Chinese curriculum strand.",
+    admissions:"Competitive, with a debenture and bilingual assessment. Strong community of families seeking equal academic weight in English and Mandarin.",
+    highlights:["IB average 38.9 (2025)","Full Chinese–English immersion from Pre-K","Strong US / UK / HK university placement"]},
+  {id:"cdnis",name:"Canadian International School of Hong Kong",short:"CDNIS",mono:"CDNIS",curriculum:["IB"],bilingual:true,region:"Hong Kong Island",district:"Aberdeen",address:"36 Nam Long Shan Road, Aberdeen",founded:1991,feeLow:138600,feeHigh:254300,ibAvg:38.0,result:"38.0",resultLabel:"IB average (2025)",cohort:"~1,900 students",grades:"Pre-Reception–Grade 12",tagline:"Canadian-inflected IB with a strong Mandarin strand",website:"https://www.cdnis.edu.hk",
+    history:"Founded 1991, CDNIS blends the IB continuum with Canadian (Ontario) influences and offers a bilingual English–Chinese strand alongside its English programme.",
+    admissions:"Rolling admissions with a debenture; the bilingual strand is a differentiator for families prioritising Mandarin.",
+    highlights:["IB average 38.0 (2025), 3 perfect scores","Canadian + IB curriculum blend","Strong Mandarin programme"]},
+  {id:"sishk",name:"Singapore International School (HK)",short:"SISHK",mono:"SIS",curriculum:["IB"],bilingual:true,region:"Hong Kong Island",district:"Aberdeen",address:"23 Nam Long Shan Road, Aberdeen",founded:1991,feeLow:123000,feeHigh:274900,ibAvg:39.0,result:"39.0",resultLabel:"IB average (2025)",cohort:"~1,500 students",grades:"IB continuum (PY1–DP2)",tagline:"Singapore-influenced bilingual rigour",website:"https://www.sishk.edu.hk",
+    history:"Founded 1991, SISHK is an IB World School shaped by Singapore's bilingual (English–Chinese) and high-rigour academic traditions.",
+    admissions:"Priority to Singaporean citizens; debenture and competitive assessment.",
+    highlights:["IB average 39.0 (2025)","Singapore-influenced bilingual approach","Reputation for strong maths and science"]},
+  {id:"vsa",name:"Victoria Shanghai Academy",short:"VSA",mono:"VSA",curriculum:["IB"],bilingual:true,region:"Hong Kong Island",district:"Aberdeen (Shum Wan)",address:"19 Shum Wan Road, Aberdeen",founded:2004,feeLow:181200,feeHigh:255600,ibAvg:38.0,result:"38.0",resultLabel:"IB average (2025)",cohort:"~2,000 students",grades:"K–Grade 12",tagline:"Bilingual IB continuum on the south side",website:"https://www.vsa.edu.hk",
+    history:"Founded 2004 by the VSA Foundation as a private independent school, VSA runs the full IB continuum in a bilingual English–Mandarin environment.",
+    admissions:"Competitive with a debenture; bilingual environment suits families seeking Chinese–English balance.",
+    highlights:["IB average 38.0 (2025), 7 perfect scores","Full IB continuum, bilingual","Strong university placement"]},
+  {id:"wis",name:"ESF West Island School",short:"West Island",mono:"WIS",curriculum:["IB"],bilingual:false,region:"Hong Kong Island",district:"Pok Fu Lam",address:"250 Victoria Road, Pok Fu Lam",founded:1991,feeLow:159400,feeHigh:188300,ibAvg:37.3,result:"37.3",resultLabel:"IB average (2025)",cohort:"~1,200 students",grades:"Years 7–13",tagline:"Highest-scoring ESF school in 2025",website:"https://www.westisland.edu.hk",
+    history:"An English Schools Foundation secondary on Victoria Road, West Island follows the ESF pathway: a British-style curriculum to IGCSE, then the IB Diploma.",
+    admissions:"ESF central application; a one-off Nomination Rights contribution (~HK$38k per family) replaces a debenture. Zoning/catchment priority applies at Year 7.",
+    highlights:["Highest ESF IB average in 2025 (37.3)","~⅓ the price of private flagships","Strong all-round academic + sports offer"]},
+  {id:"stc",name:"ESF Sha Tin College",short:"Sha Tin College",mono:"STC",curriculum:["IB"],bilingual:false,region:"New Territories",district:"Sha Tin (Fo Tan)",address:"3 Lai Wo Lane, Fo Tan, Sha Tin",founded:1982,feeLow:159400,feeHigh:188300,ibAvg:37.5,result:"37.5",resultLabel:"IB average (2025)",cohort:"~1,200 students",grades:"Years 7–13",tagline:"Most IB perfect scores in Hong Kong (10)",website:"https://www.shatincollege.edu.hk",
+    history:"An ESF secondary school in Fo Tan, Sha Tin College runs IGCSE then the IB Diploma, and has one of the largest and highest-achieving cohorts in the foundation.",
+    admissions:"ESF central application with catchment priority and a one-off Nomination Rights contribution.",
+    highlights:["10 perfect 45-point scores in 2025 — most in HK","IB average 37.5 (2025)","Large, high-achieving cohort"]},
+  {id:"island",name:"ESF Island School",short:"Island School",mono:"IS",curriculum:["IB"],bilingual:false,region:"Hong Kong Island",district:"Mid-Levels",address:"20 Borrett Road, Mid-Levels",founded:1967,feeLow:159400,feeHigh:188300,ibAvg:37.1,result:"37.1",resultLabel:"IB average (2025)",cohort:"~1,200 students",grades:"Years 7–13",tagline:"ESF's original secondary, rebuilt at Borrett Road",website:"https://www.island.edu.hk",
+    history:"The founding ESF secondary (opened 1967), Island School recently relocated into a new campus at Borrett Road in Mid-Levels.",
+    admissions:"ESF central application; catchment priority and a one-off Nomination Rights contribution.",
+    highlights:["IB average 37.1 (2025)","Brand-new Borrett Road campus","Historic, well-connected central location"]},
+  {id:"kgv",name:"ESF King George V School",short:"KGV",mono:"KGV",curriculum:["IB"],bilingual:false,region:"Kowloon",district:"Ho Man Tin",address:"2 Tin Kwong Road, Ho Man Tin",founded:1902,feeLow:159400,feeHigh:188300,ibAvg:35.5,result:"35.5",resultLabel:"IB average (2025)",cohort:"~1,700 students",grades:"Years 7–13",tagline:"A century of history — founded 1902",website:"https://www.kgv.edu.hk",
+    history:"Tracing its roots to the 1902 Kowloon British School, KGV is the oldest ESF secondary and one of Hong Kong's most storied international schools.",
+    admissions:"ESF central application; catchment priority and a one-off Nomination Rights contribution.",
+    highlights:["Over 120 years of history","IB average 35.5 (2025)","Large, diverse Kowloon-side cohort"]},
+  {id:"sis",name:"ESF South Island School",short:"South Island",mono:"SIS",curriculum:["IB"],bilingual:false,region:"Hong Kong Island",district:"Aberdeen",address:"50 Nam Fung Road, Aberdeen",founded:1977,feeLow:159400,feeHigh:188300,ibAvg:35.9,result:"35.9",resultLabel:"IB average (2025)",cohort:"~1,400 students",grades:"Years 7–13",tagline:"South-side ESF school above Aberdeen",website:"https://www.sis.edu.hk",
+    history:"Opened 1977 on Nam Fung Road, South Island School serves Hong Kong Island's south side with the ESF IGCSE-then-IB pathway.",
+    admissions:"ESF central application; catchment priority and a one-off Nomination Rights contribution.",
+    highlights:["IB average 35.9 (2025)","Leafy south-side campus","Strong sports and design programmes"]},
+  {id:"dc",name:"ESF Discovery College",short:"Discovery College",mono:"DC",curriculum:["IB"],bilingual:false,region:"Lantau",district:"Discovery Bay, Lantau",address:"38 Siena Avenue, Discovery Bay",founded:2007,feeLow:159400,feeHigh:188300,ibAvg:35.2,result:"35.2",resultLabel:"IB average (2025)",cohort:"~1,400 students",grades:"Years 1–13",tagline:"Private independent ESF school in Discovery Bay",website:"https://www.discovery.edu.hk",
+    history:"Opened 2007 as a private independent school under the ESF umbrella, Discovery College offers the full IB continuum to the Discovery Bay community.",
+    admissions:"Private independent admissions (separate from ESF central allocation); Nomination Rights apply.",
+    highlights:["Full IB continuum (PYP–DP)","IB average 35.2 (2025)","Serves Discovery Bay & Lantau"]},
+  {id:"rchk",name:"ESF Renaissance College",short:"Renaissance College",mono:"RCHK",curriculum:["IB"],bilingual:false,region:"New Territories",district:"Ma On Shan",address:"5 Hang Ming Street, Ma On Shan",founded:2006,feeLow:159400,feeHigh:188300,ibAvg:36.0,result:"36.0",resultLabel:"IB average (2025)",cohort:"~2,000 students",grades:"Years 1–13",tagline:"Private independent ESF school in Ma On Shan",website:"https://www.renaissance.edu.hk",
+    history:"Opened 2006 as a private independent school under the ESF umbrella, Renaissance College (RCHK) delivers the full IB continuum in Ma On Shan.",
+    admissions:"Private independent admissions; Nomination Rights apply.",
+    highlights:["Full IB continuum (PYP–DP)","IB average 36.0 (2025)","Large New Territories campus"]},
+  {id:"harrow",name:"Harrow International School Hong Kong",short:"Harrow HK",mono:"H",curriculum:["A-Level"],bilingual:false,region:"New Territories",district:"Tuen Mun",address:"38 Tsing Ying Road, Tuen Mun",founded:2012,feeLow:201314,feeHigh:299070,ibAvg:null,result:"A-Level",resultLabel:"Sixth-form pathway",cohort:"~1,500 students",grades:"K–Year 13",tagline:"Hong Kong's only full-boarding international school",website:"https://www.harrowschoothk.hk",
+    history:"Opened 2012 as the first Harrow-branded school in Asia, Harrow Hong Kong is the city's only full-boarding international school, offering the British curriculum to IGCSE and A-Level.",
+    admissions:"Competitive, with boarding available from Upper School. Strong emphasis on leadership, service and the Harrow house system.",
+    highlights:["Only full-boarding international school in HK","Harrow heritage (founded 2012)","Strong Oxbridge / Russell Group placements","Leadership & house system"]},
+  {id:"kellett",name:"Kellett School",short:"Kellett",mono:"K",curriculum:["A-Level"],bilingual:false,region:"Kowloon",district:"Kowloon Bay (senior) · Pok Fu Lam (prep)",address:"7 Lam Hing Street, Kowloon Bay",founded:1976,feeLow:208800,feeHigh:279600,ibAvg:null,result:"A-Level",resultLabel:"Sixth-form pathway",cohort:"~1,400 students",grades:"Reception–Year 13",tagline:"Long-established British school — IGCSE to A-Level",website:"https://www.kellettschool.com",
+    history:"Founded 1976 as 'The British International School in Hong Kong', Kellett follows the English National Curriculum to IGCSE and A-Level across two campuses.",
+    admissions:"Rolling admissions; strong community feel and a reputation for pastoral care.",
+    highlights:["One of HK's longest-established British schools","IGCSE → A-Level pathway","Dual campuses (Pok Fu Lam & Kowloon Bay)"]},
+  {id:"nais",name:"Nord Anglia International School HK",short:"NAIS HK",mono:"NAIS",curriculum:["IB","A-Level"],bilingual:false,region:"Kowloon",district:"Lam Tin (primary) · Kwun Tong (secondary)",address:"11 On Tin Street, Lam Tin",founded:2014,feeLow:172000,feeHigh:215000,ibAvg:35.7,result:"35.7",resultLabel:"IB average (2025)",cohort:"~1,700 students",grades:"Nursery–Year 13",tagline:"Global network school — MIT & Juilliard collaborations",website:"https://www.nordangliaeducation.com/nais-hong-kong",
+    history:"Founded 2014 as part of the global Nord Anglia Education group, NAIS HK runs the English National Curriculum to IGCSE, then the IB Diploma (adding A-Levels from August 2026 at its new Hung Hom Sixth Form Centre).",
+    admissions:"Rolling admissions; collaborations with MIT (STEAM), Juilliard (performing arts) and UNICEF shape the enrichment offer.",
+    highlights:["IB average 35.7 (2025)","A-Level pathway added from Aug 2026","MIT / Juilliard / UNICEF collaborations","Daily Mandarin from age 3"]},
+  {id:"malvern",name:"Malvern College Hong Kong",short:"Malvern College",mono:"MC",curriculum:["IB"],bilingual:false,region:"New Territories",district:"Pak Shek Kok (near Science Park)",address:"3 Fo Chun Road, Pak Shek Kok",founded:2018,feeLow:185000,feeHigh:232000,ibAvg:39.0,result:"39.0",resultLabel:"IB average (2025)",cohort:"Small cohort",grades:"Pre-School–Year 13",tagline:"British heritage, small cohort, high IB average",website:"https://www.malverncollege.org.hk",
+    history:"Opened 2018 as the Hong Kong outpost of the British Malvern College, offering the IB continuum in a leafy campus near Science Park.",
+    admissions:"Growing, selective school; a smaller cohort and bespoke pastoral model distinguish it from the ESF scale.",
+    highlights:["IB average 39.0 (2025)","British heritage (2018 founding)","Small-cohort, personal attention"]},
+  {id:"hka",name:"Hong Kong Academy",short:"HKA",mono:"HKA",curriculum:["IB"],bilingual:false,region:"New Territories",district:"Sai Kung",address:"33 Wai Man Road, Sai Kung",founded:2000,feeLow:221800,feeHigh:264700,ibAvg:null,result:"IB",resultLabel:"Diploma (results annual)",cohort:"~500 students",grades:"Pre-K–Grade 12",tagline:"Community-centred IB World School in Sai Kung",website:"https://www.hkacademy.edu.hk",
+    history:"Founded 2000, Hong Kong Academy is a close-knit, inclusive IB World School in Sai Kung known for its community feel and learning-support culture.",
+    admissions:"Inclusive, non-selective ethos; strong emphasis on individual learning support.",
+    highlights:["Full IB continuum (PYP–DP)","Community-centred, inclusive ethos","Strong learning-support culture"]},
+  {id:"aishk",name:"Australian International School HK",short:"AISHK",mono:"AIS",curriculum:["HSC","IB"],bilingual:false,region:"Kowloon",district:"Kowloon Tong",address:"3A Norfolk Road, Kowloon Tong",founded:1995,feeLow:148800,feeHigh:252800,ibAvg:38.0,result:"38.0",resultLabel:"IB average (2025)",cohort:"~1,100 students",grades:"Reception–Year 12",tagline:"The only Australian-curriculum school in Hong Kong",website:"https://www.aishk.edu.hk",
+    history:"Founded 1995, AISHK is Hong Kong's only Australian-curriculum school, running the NSW HSC alongside the IB Diploma and a January-to-December (Southern Hemisphere) calendar.",
+    admissions:"Well suited to Australian/NZ families or those on the Australian university track; Mandarin taught daily in primary.",
+    highlights:["Only Australian-curriculum school in HK","Choice of NSW HSC or IB Diploma","IB average 38.0 (2025), 41% scoring 40+","Southern-Hemisphere academic calendar"]},
+  {id:"ycis",name:"Yew Chung International School of HK",short:"YCIS",mono:"YCIS",curriculum:["IB"],bilingual:true,region:"Kowloon",district:"Kowloon Tong · Tseung Kwan O",address:"3 To Fuk Road, Kowloon Tong",founded:1932,feeLow:225000,feeHigh:272140,ibAvg:null,result:"100% pass",resultLabel:"IB DP (2025)",cohort:"~2,500 students",grades:"K–Year 13",tagline:"Bilingual pioneer founded 1932, up to 72% Bilingual Diploma",website:"https://www.ycis-hk.com",
+    history:"Founded 1932 by Madam Tsang Chor-hang as Hong Kong's first homegrown international school, YCIS pioneered bilingual co-teaching (one Chinese, one Western teacher per class) and was the first international school in HK to graduate IB students (2000).",
+    admissions:"Dual-principalship bilingual model; secondary follows IGCSE (Years 10–11) then the IB Diploma, with a Pre-IB year available for new joiners.",
+    highlights:["Founded 1932 — HK's first homegrown international school","Up to 72% earn the IB Bilingual Diploma","100% IB pass rate (2025)","Distinctive Chinese–Western co-teaching model"]}
+];
+
+const grid = document.getElementById("grid");
+const tbody = document.getElementById("tbody");
+const countEl = document.getElementById("count");
+const q = document.getElementById("q");
+const sortSel = document.getElementById("sort");
+
+let activeCur = new Set();
+let activeRegion = "all";
+let activeLang = "all";
+
+function fmtK(n){return "HK$" + Math.round(n/1000) + "k";}
+function fmtFull(n){return "HK$" + n.toLocaleString("en-US");}
+
+function feeBand(lo, hi){
+  const bands = [[0,150000],[150000,200000],[200000,250000],[250000,300000],[300000,Infinity]];
+  const b = v => bands.findIndex(x => v >= x[0] && v < x[1]);
+  const a = b(lo), c = b(hi);
+  return Array.from({length:5}, (_,i) => i >= a && i <= c);
+}
+
+function badgeHTML(cur){
+  const brass = cur === "Abitur" || cur === "HSC";
+  return '<span class="badge' + (brass ? " brass" : "") + '">' + cur + "</span>";
+}
+
+function cardHTML(s){
+  const band = feeBand(s.feeLow, s.feeHigh);
+  return '<article class="card">' +
+    '<div class="card-head">' +
+      '<div class="mono">' + s.mono + "</div>" +
+      '<div><h2><a href="' + s.website + '" target="_blank" rel="noopener">' + s.name + "</a></h2>" +
+      '<div class="loc"><b>' + s.district + "</b> · " + s.region + "</div>" +
+      '<div class="badges">' + s.curriculum.map(badgeHTML).join("") +
+      (s.bilingual ? '<span class="badge brass">Bilingual</span>' : "") + "</div></div>" +
+    "</div>" +
+    '<div class="tagline">' + s.tagline + "</div>" +
+    '<div class="statstrip">' +
+      '<div class="cell"><span class="k">Founded</span><span class="v">' + s.founded + "</span></div>" +
+      '<div class="cell"><span class="k">' + s.resultLabel + '</span><span class="v">' + s.result + "</span></div>" +
+      '<div class="cell"><span class="k">Annual tuition (indicative)</span><span class="v">' + fmtK(s.feeLow) + "–" + fmtK(s.feeHigh) +
+        '<span class="fee-bar">' + band.map(on => '<i class="' + (on ? "on" : "") + '"></i>').join("") + "</span></span></div>" +
+      '<div class="cell"><span class="k">School</span><span class="v">' + s.grades + "<small> · " + s.cohort + "</small></span></div>" +
+    "</div>" +
+    "<details><summary>History · Admissions · Highlights</summary><div class='detail'>" +
+      "<h4>History</h4><p>" + s.history + "</p>" +
+      "<h4>Admissions &amp; costs</h4><p>" + s.admissions + "</p>" +
+      "<h4>Highlights</h4><ul>" + s.highlights.map(h => "<li>" + h + "</li>").join("") + "</ul>" +
+      '<a class="site" href="' + s.website + '" target="_blank" rel="noopener">Official website ↗</a>' +
+    "</div></details>" +
+  "</article>";
+}
+
+function rowHTML(s){
+  return "<tr>" +
+    '<td><span class="nm">' + s.name + "<small>" + s.address + "</small></span></td>" +
+    "<td>" + s.region + "</td>" +
+    "<td>" + s.curriculum.map(badgeHTML).join("") + "</td>" +
+    '<td class="num">' + s.result + (s.ibAvg != null ? " / 45" : "") + '<br><span style="font-weight:400;color:var(--muted);font-size:.72rem">' + s.resultLabel + "</span></td>" +
+    '<td class="num">' + fmtFull(s.feeLow) + "–" + fmtFull(s.feeHigh) + "</td>" +
+    '<td class="num">' + s.founded + "</td>" +
+  "</tr>";
+}
+
+function matches(s){
+  const qv = q.value.trim().toLowerCase();
+  if(qv && !(s.name + " " + s.short + " " + s.district + " " + s.region).toLowerCase().includes(qv)) return false;
+  if(activeCur.size && !s.curriculum.some(c => activeCur.has(c))) return false;
+  if(activeRegion !== "all" && s.region !== activeRegion) return false;
+  if(activeLang === "bilingual" && !s.bilingual) return false;
+  if(activeLang === "english" && s.bilingual) return false;
+  return true;
+}
+
+function sortList(list){
+  const k = sortSel.value;
+  const cp = list.slice();
+  if(k === "name") cp.sort((a,b)=>a.name.localeCompare(b.name));
+  if(k === "founded") cp.sort((a,b)=>a.founded-b.founded);
+  if(k === "fee") cp.sort((a,b)=>a.feeLow-b.feeLow);
+  if(k === "ib") cp.sort((a,b)=>(b.ibAvg??-1)-(a.ibAvg??-1));
+  return cp;
+}
+
+function render(){
+  const list = sortList(SCHOOLS.filter(matches));
+  grid.innerHTML = list.map(cardHTML).join("");
+  tbody.innerHTML = list.map(rowHTML).join("");
+  countEl.textContent = list.length
+    ? "Showing " + list.length + " of " + SCHOOLS.length + " schools"
+    : "No schools match these filters";
+  if(!list.length){ grid.innerHTML = '<p class="empty">No schools match — try clearing a filter or two.</p>'; }
+}
+
+document.querySelectorAll(".chip[data-cur]").forEach(b => {
+  b.addEventListener("click", () => {
+    const on = b.getAttribute("aria-pressed") === "true";
+    b.setAttribute("aria-pressed", String(!on));
+    on ? activeCur.delete(b.dataset.cur) : activeCur.add(b.dataset.cur);
+    render();
+  });
+});
+document.querySelectorAll(".chip[data-reg]").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".chip[data-reg]").forEach(x=>x.setAttribute("aria-pressed","false"));
+    b.setAttribute("aria-pressed","true");
+    activeRegion = b.dataset.reg;
+    render();
+  });
+});
+document.querySelectorAll(".chip[data-lang]").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".chip[data-lang]").forEach(x=>x.setAttribute("aria-pressed","false"));
+    b.setAttribute("aria-pressed","true");
+    activeLang = b.dataset.lang;
+    render();
+  });
+});
+q.addEventListener("input", render);
+sortSel.addEventListener("change", render);
+
+render();
+</script>
